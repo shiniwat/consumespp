@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Consume SPP Services</string>
+    <string name="default_msg">start consuming SPP services...</string>
+</resources>
