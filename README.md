@@ -18,7 +18,7 @@ For instance, this is basic steps to verify:
 4. On the linux box, browse the SPP service records by following command:
 
 ```
-sdptool browse **{BT address of the Android device}**
+sdptool browse <BT address of the Android device>
 ```
 
 For instance,
