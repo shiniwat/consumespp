@@ -16,12 +16,16 @@
  */
 package net.shiniwa.consumesppservices
 
-import androidx.appcompat.app.AppCompatActivity
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity(), BTTransportDummy.BTTransportCallback {
     private val TAG = MainActivity::class.java.simpleName
@@ -33,18 +37,26 @@ class MainActivity : AppCompatActivity(), BTTransportDummy.BTTransportCallback {
         Log.d(TAG, "onCreate...")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        requestPermissionLauncher.launch(arrayOf(Manifest.permission.BLUETOOTH_CONNECT))
 
         var text = findViewById<TextView>(R.id.resource_info)
         text.setText(R.string.default_msg)
 
-        val handler = Handler(Looper.getMainLooper())
-        handler.postDelayed({
-            val btTransport = BTTransportDummy(this)
-            btTransports.add(btTransport)
-            btTransport.startThread()
-        }, 1000)
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
+    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        val grantedPermissions = permissions.keys.filter { key -> permissions[key] == true }
+        Log.d(TAG, "permissions = $permissions, grantedPermissions=$grantedPermissions")
+        if (grantedPermissions.contains(Manifest.permission.BLUETOOTH_CONNECT)) {
+            val handler = Handler(Looper.getMainLooper())
+            handler.postDelayed({
+                val btTransport = BTTransportDummy(this)
+                btTransports.add(btTransport)
+                btTransport.startThread()
+            }, 1000)
+        }
+    }
     override fun listened() {
         if (failedListenning) {
             return;
